@@ -23,5 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 django_index.html
-OSM_Serveur/france-latest.osm.pbf
-OSM_Serveur/france-latest.osrm.timestamp
+OSM_Serveur

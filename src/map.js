@@ -1,7 +1,5 @@
+import { Point, Route } from './elements.js';
 
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import {Point, Route} from './elements.js';
 
 export class Map extends L.Map{
   constructor() {
@@ -10,7 +8,7 @@ export class Map extends L.Map{
     this.setView([48.3904, -4.4861], 13);
     // Add OpenStreetMap tile layer
     const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
+      maxZoom: 10,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(this);
 
@@ -28,7 +26,6 @@ export class Map extends L.Map{
     // List pour les paths
     this.paths = Array();
     this.pathIndex = -1; // la route actuelle
-    this.a = 8;
 
     this.addEventListener("contextmenu", this.handleContextMenu);    
   }
@@ -67,11 +64,18 @@ export class Map extends L.Map{
     })
     this.paths = []
     this.pathIndex = -1
-
     // Suppression des événements
-    this.removeEventListener("contextmenu", this.handleContextMenu)
-    
+    this.removeEventListener("contextmenu", this.handleContextMenu);
     // Suppression de la carte
-    super.remove()
+    super.remove();
+    this.clearMapDiv();
+  }
+  clearMapDiv() {
+    const newMapDiv = document.createElement('div');
+    newMapDiv.id = 'map';
+    const oldMapDiv = document.getElementById('map');
+    if (oldMapDiv){
+        oldMapDiv.parentNode.replaceChild(newMapDiv, oldMapDiv);
+    }
   }
 }

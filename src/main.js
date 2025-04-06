@@ -1,41 +1,48 @@
-import './index.css'
-import './elements.css'
-import 'vite/modulepreload-polyfill';
 
-import {Map} from './map.js'
+import './index.css';
+import './elements.css';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
-export const map = new Map();
+let mapInstance;
+
+const { Map } = await import('./map.js');
+mapInstance = new Map();
+
+// Handle Hot Module Replacement
+if (import.meta.hot) {
+  import.meta.hot.accept('./map.js', (module) => {
+    console.log('[HMR] Updating map module');
+    mapInstance.remove();
+    mapInstance = new module.Map();
+  });
+}
+
+/*
+let mapInstance;
+
+async function loadMap() {
+  const mod = await import('./map.js'); // 👈 force fresh reload
+  console.log('[DEBUG] Reloaded Map module');
+
+  if (mapInstance) {
+    console.log('[DEBUG] Removing previous map instance...');
+    mapInstance.remove();
+  }
+
+  mapInstance = new mod.default();
+  window.map = mapInstance;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadMap();
+});
 
 if (import.meta.hot) {
-  console.a = 100
-  console.log("import")
-    // Surveillance de map.jsx
-    import.meta.hot.accept('./map.js', (newModule) => {
-      console.log("asen")
-      if (newModule) {
-        console.log("new map")
-        map.remove()
-        //const newMap = new newModule.Map()
-        //window.map = newMap
-      }
-    })
-  
-    // Surveillance de elements.jsx
-    import.meta.hot.accept('./elements.js', (newModule) => {
-      if (newModule) {
-        // Recréer la carte pour appliquer les changements des éléments
-        const oldMap = map
-        oldMap.remove()
-        const newMap = new Map()
-        window.map = newMap
-        
-        // Transférer l'état si nécessaire
-        /*
-        if (oldMap.paths.length > 0) {
-          oldMap.paths.forEach(path => {
-            newMap.addPath(path.getFirstCoord())
-          })
-        }*/
-      }
-    })
-  }
+  console.debug("new meta detected")
+  import.meta.hot.accept((newModule) => {
+    console.log('[HMR] Accept triggered');
+    loadMap();
+  });
+}
+*/

@@ -1,3 +1,5 @@
+import L from 'leaflet';
+
 export class Route{
 
 	constructor(coordinates,map) {
