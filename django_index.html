@@ -1,0 +1,21 @@
+{% load django_vite %}
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    {% if debug %}
+      <script> console.log("Debug mode")</script>
+      {% vite_hmr_client %}
+    {% endif %}
+    {% vite_hmr_client %}
+    {% vite_asset 'src/main.jsx' %}
+
+    <link rel="icon" type="image/svg+xml" href="{% static 'vite.svg' %}" />
+    <title>Vite + Preact</title>
+  </head>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

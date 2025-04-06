@@ -1,0 +1,40 @@
+.marker {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background-color: #2196F3;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 3px rgba(0,0,0,0.3);
+}
+
+
+.marker span {
+    color: #000;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    cursor: pointer;
+    background: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #666;
+    font-size: 14px;
+    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    left: 0px;
+    top: -18px;
+}
+.marker .close{
+    transform: translateX(60%);
+}
+.marker .extend{
+    transform: translateX(-60%);
+}
+
+.marker span:hover {
+    background: #f0f0f0;
+}
