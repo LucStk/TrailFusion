@@ -1,12 +1,11 @@
 
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import {Point, Route} from './elements.jsx';
+import {Point, Route} from './elements.js';
 
 export class Map extends L.Map{
   constructor() {
     super('map');
-    console.a = 12;
     // Default view
     this.setView([48.3904, -4.4861], 13);
     // Add OpenStreetMap tile layer
@@ -14,7 +13,7 @@ export class Map extends L.Map{
       maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(this);
-  
+
     // Add CyclOSM tile layer
     const cycleLayer = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
       maxZoom: 20,
@@ -26,10 +25,10 @@ export class Map extends L.Map{
       "Cycle Map": cycleLayer
     };
     L.control.layers(baseMaps).addTo(this);
-
     // List pour les paths
     this.paths = Array();
     this.pathIndex = -1; // la route actuelle
+    this.a = 8;
 
     this.addEventListener("contextmenu", this.handleContextMenu);    
   }
@@ -75,5 +74,4 @@ export class Map extends L.Map{
     // Suppression de la carte
     super.remove()
   }
-
 }

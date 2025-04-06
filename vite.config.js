@@ -18,7 +18,11 @@ export default defineConfig({
       port: 5173,
       clientPort: 5173,
       timeout: 5000
-    }
+    },
+    watch: {
+      usePolling: true,
+    },
+
   },
   build: {
     manifest: "manifest.json",
