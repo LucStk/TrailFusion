@@ -5,7 +5,7 @@ export class Map extends L.Map{
   constructor() {
     super('map');
     // Default view
-    this.setView([48.3904, -4.4861], 13);
+    this.setView([48.3904, -4.4861], 15);
     // Add OpenStreetMap tile layer
     const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 10,
@@ -14,7 +14,7 @@ export class Map extends L.Map{
 
     // Add CyclOSM tile layer
     const cycleLayer = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
-      maxZoom: 20,
+      maxZoom: 10,
       attribution: '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a>'
     });
     // Layer control

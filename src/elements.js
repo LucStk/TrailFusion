@@ -10,22 +10,44 @@ export class Route{
 		this.entrypoint.route = this;
 	}
 
-	drop(){
-		this.map.removePath(this);
+    remove() {
+        // Supprimer tous les points
+        if (this.entrypoint) {
+			let n = this.entrypoint.next;
+			let p = this.entrypoint.previous;
+			this.entrypoint.remove();
+            function rec_drop(point, direction) {
+                if (!point) return;
+                const nextPoint = direction ? point.next : point.previous;
+                point.remove();
+                rec_drop(nextPoint, direction);
+            }
+            
+            rec_drop(n, true);
+            rec_drop(p, false);
+        }
+        
+        // Nettoyer les références
+        this.entrypoint = null;
+        this.coordinates = null;
+        
+        // Notifier la carte si nécessaire
+        if (this.map) {
+            // Émettre un événement de suppression de route
+            this.map.fire('routeremoved', { route: this });
+        } 
 	}
 
 	getFirstPoint(){
 		function rec_first(point) {
-			if (!point.previous) {return point;}
-			return rec_first(point.previous);
+			return point.previous ? rec_first(point.previous) : point
 		}
 		return rec_first(this.entrypoint);
 	}
 
 	getLastPoint(){
 		function rec_last(point) {
-			if (!point.next) {return point;}
-			return rec_last(point.previous);
+			return point.next ? rec_first(point.next) : point
 		}
 		return rec_last(this.entrypoint);
 	}
@@ -82,6 +104,15 @@ class Lines extends L.Polyline {
 		this.on("dblclick", this.handledbClick);
 		this.on("click", this.handleClick);
 		this.on("contextmenu", this.handleContextMenu);
+	}
+	remove(){
+        this.off("dblclick");
+        this.off("click");
+        this.off("contextmenu");
+
+		super.remove();
+		this.point = null;
+
 	}
 
 	nextColor() {
@@ -156,7 +187,50 @@ export class Point extends L.Marker {
 		});
 		//this.on("dragstart", this.watchForFuse);
 		//this.on("onmouseover", this.handleDragStart);
+	}
+	remove() {
+		// Supprimer le marqueur graphiquement
+		this.off("contextmenu");
+        this.off("click");
+        this.off("move");
+        	
+		super.remove();
+		// Nettoyer le segment
+		if (this.segment) {
+			this.segment.remove();
+			this.segment = null;
+		}
+		
+		// Mettre à jour les liaisons
+		if (this.previous) {
+			this.previous.next = this.next;
+			this.previous.updateSegment();
+		}
+		if (this.next) {
+			this.next.previous = this.previous;
+		}
 
+		// Nettoyer les références
+		this.next = null;
+		this.previous = null;
+		this.route = null;
+		this.map = null;
+	}
+
+	drop(){
+		this.remove()
+        if (this.route && this.route.entrypoint === this) {
+            if (this.next) {
+                this.route.entrypoint = this.next;
+            } else if (this.previous) {
+                this.route.entrypoint = this.previous;
+            } else {
+                // La route est vide
+				this.remove()
+                this.route.remove();
+            }
+        }
+		
 	}
 
 	watchForFuse(e) {
@@ -261,7 +335,7 @@ export class Point extends L.Marker {
 		
 		}else {console.error("Error : Impossible de fusionner les points {} et {}", this, point)}
 
-		point.drop();
+		point.remove();
 
 		//On supprime les doublons de routes
 		function rec_chg(point, sens_next) {
@@ -273,36 +347,11 @@ export class Point extends L.Marker {
 		rec_chg(this, sens_Next);
 	}
 
-	drop() {
-		// Supprimer le marqueur graphiquement
-		this.remove();
-		// On drop la référence dans map
-		// Supprime le segment qui part de ce point si il existe
-		if (this.segment) {this.segment.remove();}
-		
-		// On transmet le suivant au précédent
-		if (this.previous) {this.previous.setNext(this.next);}
-
-		// On évite de perdre lentrypoint de la route si il l'était
-		const currentRoute = this.route;
-		if (!currentRoute) {return;}
-		if (this.route.entrypoint === this) {
-			if (this.next) {
-				this.route.entrypoint = this.next;
-			} else if (this.previous) {
-				this.route.entrypoint = this.previous;
-			} else {
-				// Soit la chaine est brisée soit il n'y a aucun points
-				// On supprime la route
-				this.map.removePath(currentRoute);
-			}
-		}
-	}
 
 	handleFuse(e) {
 		// Si les deux points sont trop proches, on les fusionne
 		e.originalEvent.preventDefault();
-		this.drop();
+		this.remove();
 	}
 
 	handleClick(e) {
@@ -365,10 +414,10 @@ export class Point extends L.Marker {
 		console.log("Elements under cursor:", elementsUnderCursor);
 
 	}
-	handleDrop(e) {
+	handleremove(e) { 
 		if (e.dataTransfer) {
 			const data = e.dataTransfer.getData('text/plain');
-			console.log("Drop data:", data);
+			console.log("remove data:", data);
 		} else {
 			console.log("dataTransfer non disponible");
 		}

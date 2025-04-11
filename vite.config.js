@@ -1,20 +1,10 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import solidPlugin from 'vite-plugin-solid';
 import { resolve } from 'path'
 
 
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    hmr: true
-  }
-});
-
-
-// https://vite.dev/config/
-/*
-export default defineConfig({
-  plugins: [react()],
+  plugins:[solidPlugin()],
   base: "/static/",
   server: {
     open: true,
@@ -45,4 +35,3 @@ export default defineConfig({
     },
   },
 })
-*/
